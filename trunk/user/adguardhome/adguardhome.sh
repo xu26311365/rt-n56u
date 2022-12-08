@@ -79,7 +79,7 @@ dns:
   ratelimit_whitelist: []
   refuse_any: true
   bootstrap_dns:
-  - 1.1.1.1
+  - 223.5.5.5
   all_servers: true
   allowed_clients: []
   disallowed_clients: []
@@ -90,7 +90,7 @@ dns:
   safebrowsing_enabled: false
   resolveraddress: ""
   upstream_dns:
-  - 1.1.1.1
+  - 223.5.5.5
 tls:
   enabled: false
   server_name: ""
@@ -108,14 +108,6 @@ filters:
   url: https://adaway.org/hosts.txt
   name: AdAway
   id: 2
-- enabled: true
-  url: https://hosts-file.net/ad_servers.txt
-  name: hpHosts - Ad and Tracking servers only
-  id: 3
-- enabled: true
-  url: https://www.malwaredomainlist.com/hostslist/hosts.txt
-  name: MalwareDomainList.com Hosts List
-  id: 4
 user_rules: []
 dhcp:
   enabled: false
@@ -130,37 +122,24 @@ clients: []
 log_file: ""
 verbose: false
 schema_version: 3
-
 EEE
 	chmod 755 "$adg_file"
 fi
 }
 
-dl_adg(){
-logger -t "AdGuardHome" "下载AdGuardHome"
-#wget --no-check-certificate -O /tmp/AdGuardHome.tar.gz https://github.com/AdguardTeam/AdGuardHome/releases/download/v0.101.0/AdGuardHome_linux_mipsle.tar.gz
-curl -k -s -o /tmp/AdGuardHome/AdGuardHome --connect-timeout 10 --retry 3 https://cdn.jsdelivr.net/gh/chongshengB/rt-n56u/trunk/user/adguardhome/AdGuardHome
-if [ ! -f "/tmp/AdGuardHome/AdGuardHome" ]; then
-logger -t "AdGuardHome" "AdGuardHome下载失败，请检查是否能正常访问github!程序将退出。"
-nvram set adg_enable=0
-exit 0
-else
-logger -t "AdGuardHome" "AdGuardHome下载成功。"
-chmod 777 /tmp/AdGuardHome/AdGuardHome
-fi
-}
+
 
 start_adg(){
     mkdir -p /tmp/AdGuardHome
 	mkdir -p /etc/storage/AdGuardHome
 	if [ ! -f "/tmp/AdGuardHome/AdGuardHome" ]; then
-	dl_adg
+	cp /usr/bin/AdGuardHome /tmp/AdGuardHome/AdGuardHome
 	fi
 	getconfig
 	change_dns
 	set_iptable
 	logger -t "AdGuardHome" "运行AdGuardHome"
-	eval "/tmp/AdGuardHome/AdGuardHome -c $adg_file -w /tmp/AdGuardHome -v" &
+	eval "SSL_CERT_FILE=/usr/bin/cacert.pem /tmp/AdGuardHome/AdGuardHome -c $adg_file -w /tmp/AdGuardHome -v" &
 
 }
 stop_adg(){
