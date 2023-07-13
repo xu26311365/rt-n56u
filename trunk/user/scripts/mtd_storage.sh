@@ -3,7 +3,7 @@
 result=0
 mtd_part_name="Storage"
 mtd_part_dev="/dev/mtdblock5"
-mtd_part_size=65536
+mtd_part_size=6291456
 dir_storage="/etc/storage"
 slk="/tmp/.storage_locked"
 tmp="/tmp/storage.tar"
@@ -89,7 +89,7 @@ func_save()
 	md5sum $tmp > $hsh
 	bzip2 -9 $tmp 2>/dev/null
 	fsz=`stat -c %s $tbz 2>/dev/null`
-	if [ -n "$fsz" ] && [ $fsz -ge 16 ] && [ $fsz -le $mtd_part_size ] ; then
+	if [ -n "$fsz" ] && [ $fsz -ge 16 ] && [ $fsz -le $ ] ; then
 		mtd_write write $tbz $mtd_part_name
 		if [ $? -eq 0 ] ; then
 			echo "Done."
